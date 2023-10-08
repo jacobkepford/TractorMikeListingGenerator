@@ -2,9 +2,42 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/xuri/excelize/v2"
 )
+
+type ExcelWorker struct {
+	file          *excelize.File
+	columnHeaders []string
+}
+
+func (e *ExcelWorker) CloseFile() {
+	if err := e.file.Close(); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func (e *ExcelWorker) WriteColumnHeaders() {
+	for i, columnHeader := range e.columnHeaders {
+		rowValue := strconv.Itoa(i + 1)
+		cell := "A" + rowValue
+		e.WriteCell(cell, columnHeader)
+	}
+}
+
+func (e *ExcelWorker) ReadCell(cell string) string {
+	cell, err := e.file.GetCellValue("Sheet1", cell)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	return cell
+}
+
+func (e *ExcelWorker) WriteCell(cell, cellValue string) {
+	e.file.SetCellValue("Sheet1", cell, cellValue)
+}
 
 func GetColumnHeaders() []string {
 	columnHeaders := []string{"ID", "Type", "SKU", "Name", "Published", "Is featured?", "Visibility in catalog", "Short description",
@@ -24,6 +57,10 @@ func GetColumnHeaders() []string {
 		"Meta: supplierid", "Meta: _yoast_wpseo_content_score", "Meta: _yoast_wpseo_focuskw", "Meta: _yoast_wpseo_title",
 		"Meta: _yoast_wpseo_metadesc", "Meta: _yoast_wpseo_linkdex", "Meta: custom_field", "Meta: custom_field_description"}
 	return columnHeaders
+}
+
+func CreateExcelFile() ExcelWorker {
+	return ExcelWorker{file: excelize.NewFile()}
 }
 
 func main() {
