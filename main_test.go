@@ -10,7 +10,7 @@ func TestGetColumnHeaders(t *testing.T) {
 	}
 }
 
-func TestWritingColumns(t *testing.T) {
+func TestWritingColumnHeaders(t *testing.T) {
 	excelFile := CreateExcelFile()
 	defer excelFile.CloseFile()
 
