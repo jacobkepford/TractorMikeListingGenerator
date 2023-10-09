@@ -7,6 +7,8 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
+const DataStartingRow int = 2
+
 type ExcelWorker struct {
 	file          *excelize.File
 	columnHeaders []string
@@ -15,14 +17,6 @@ type ExcelWorker struct {
 func (e *ExcelWorker) CloseFile() {
 	if err := e.file.Close(); err != nil {
 		fmt.Println(err)
-	}
-}
-
-func (e *ExcelWorker) WriteColumnHeaders() {
-	for i, columnHeader := range e.columnHeaders {
-		rowValue := strconv.Itoa(i + 1)
-		cell := "A" + rowValue
-		e.WriteCell(cell, columnHeader)
 	}
 }
 
@@ -37,6 +31,20 @@ func (e *ExcelWorker) ReadCell(cell string) string {
 
 func (e *ExcelWorker) WriteCell(cell, cellValue string) {
 	e.file.SetCellValue("Sheet1", cell, cellValue)
+}
+
+func (e *ExcelWorker) WriteColumnHeaders() {
+	e.file.SetSheetRow("Sheet1", "A1", &e.columnHeaders)
+}
+
+func (e *ExcelWorker) WriteVariableTypeCells(skuLength int) {
+	rowValue := DataStartingRow
+	for i := 0; i < skuLength; i++ {
+		rowString := strconv.Itoa(rowValue)
+		cell := "B" + rowString
+		e.WriteCell(cell, "variable")
+		rowValue += 3
+	}
 }
 
 func GetColumnHeaders() []string {
