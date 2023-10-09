@@ -8,6 +8,7 @@ import (
 )
 
 const DataStartingRow int = 2
+const WorkingSheet = "Sheet1"
 
 type ExcelWorker struct {
 	file          *excelize.File
@@ -21,7 +22,7 @@ func (e *ExcelWorker) CloseFile() {
 }
 
 func (e *ExcelWorker) ReadCell(cell string) string {
-	cell, err := e.file.GetCellValue("Sheet1", cell)
+	cell, err := e.file.GetCellValue(WorkingSheet, cell)
 	if err != nil {
 		fmt.Println(err)
 		return ""
@@ -30,11 +31,11 @@ func (e *ExcelWorker) ReadCell(cell string) string {
 }
 
 func (e *ExcelWorker) WriteCell(cell, cellValue string) {
-	e.file.SetCellValue("Sheet1", cell, cellValue)
+	e.file.SetCellValue(WorkingSheet, cell, cellValue)
 }
 
 func (e *ExcelWorker) WriteColumnHeaders() {
-	e.file.SetSheetRow("Sheet1", "A1", &e.columnHeaders)
+	e.file.SetSheetRow(WorkingSheet, "A1", &e.columnHeaders)
 }
 
 func (e *ExcelWorker) WriteVariableTypeCells(skuLength int) {
