@@ -52,17 +52,27 @@ func (e *ExcelWorker) WriteVariationCells(skuData []string) {
 	rowValue := DataStartingRow + 1
 
 	for i := 0; i < len(skuData)-1; i++ {
-		typeCell := fmt.Sprintf("B%d", rowValue)
-		skuCell := fmt.Sprintf("C%d", rowValue)
-		e.WriteCell(typeCell, "variation")
-		e.WriteCell(skuCell, fmt.Sprintf("%s-BOQF10HYD", skuData[i+1]))
+		e.writeVariation(rowValue)
+		e.writeSku(rowValue, 1, skuData[i+1])
 		rowValue++
-		typeCell = fmt.Sprintf("B%d", rowValue)
-		skuCell = fmt.Sprintf("C%d", rowValue)
-		e.WriteCell(typeCell, "variation")
-		e.WriteCell(skuCell, fmt.Sprintf("%s-BOQF10", skuData[i+1]))
+		e.writeVariation(rowValue)
+		e.writeSku(rowValue, 2, skuData[i+1])
 		rowValue += 2
 	}
+}
+
+func (e *ExcelWorker) writeVariation(rowValue int) {
+	cellValue := fmt.Sprintf("B%d", rowValue)
+	e.WriteCell(cellValue, "variation")
+}
+
+func (e *ExcelWorker) writeSku(rowValue, variationCount int, skuData string) {
+	cellValue := fmt.Sprintf("C%d", rowValue)
+	if variationCount == 1 {
+		e.WriteCell(cellValue, fmt.Sprintf("%s-BOQF10HYD", skuData))
+		return
+	}
+	e.WriteCell(cellValue, fmt.Sprintf("%s-BOQF10", skuData))
 }
 
 func (e *ExcelWorker) GetDataByColumn() {

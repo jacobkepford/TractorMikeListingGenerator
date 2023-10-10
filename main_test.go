@@ -32,7 +32,7 @@ func TestWritingVariableTypeCells(t *testing.T) {
 	excelFile := CreateExcelFile()
 	defer excelFile.CloseFile()
 
-	excelFile.WriteVariableCells(2)
+	excelFile.WriteVariableCells(3)
 
 	cellValue := excelFile.ReadCell("B5")
 
