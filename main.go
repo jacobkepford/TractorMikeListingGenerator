@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"strconv"
+	"log"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -13,6 +13,7 @@ const WorkingSheet = "Sheet1"
 type ExcelWorker struct {
 	file          *excelize.File
 	columnHeaders []string
+	dataByColumn  [][]string
 }
 
 func (e *ExcelWorker) CloseFile() {
@@ -38,14 +39,40 @@ func (e *ExcelWorker) WriteColumnHeaders() {
 	e.file.SetSheetRow(WorkingSheet, "A1", &e.columnHeaders)
 }
 
-func (e *ExcelWorker) WriteVariableTypeCells(skuLength int) {
+func (e *ExcelWorker) WriteVariableCells(skuLength int) {
 	rowValue := DataStartingRow
 	for i := 0; i < skuLength; i++ {
-		rowString := strconv.Itoa(rowValue)
-		cell := "B" + rowString
+		cell := fmt.Sprintf("B%d", rowValue)
 		e.WriteCell(cell, "variable")
 		rowValue += 3
 	}
+}
+
+func (e *ExcelWorker) WriteVariationCells(skuData []string) {
+	rowValue := DataStartingRow + 1
+
+	for i := 0; i < len(skuData)-1; i++ {
+		typeCell := fmt.Sprintf("B%d", rowValue)
+		skuCell := fmt.Sprintf("C%d", rowValue)
+		e.WriteCell(typeCell, "variation")
+		e.WriteCell(skuCell, fmt.Sprintf("%s-BOQF10HYD", skuData[i+1]))
+		rowValue++
+		typeCell = fmt.Sprintf("B%d", rowValue)
+		skuCell = fmt.Sprintf("C%d", rowValue)
+		e.WriteCell(typeCell, "variation")
+		e.WriteCell(skuCell, fmt.Sprintf("%s-BOQF10", skuData[i+1]))
+		rowValue += 2
+	}
+}
+
+func (e *ExcelWorker) GetDataByColumn() {
+	dataByColumn, err := e.file.GetCols(WorkingSheet)
+
+	if err != nil {
+		log.Fatal("Unable to get data by column")
+	}
+
+	e.dataByColumn = dataByColumn
 }
 
 func GetColumnHeaders() []string {
@@ -72,16 +99,10 @@ func CreateExcelFile() ExcelWorker {
 	return ExcelWorker{file: excelize.NewFile()}
 }
 
-func main() {
-	f, err := excelize.OpenFile("Book1.xlsx")
+func CreateReadFile() ExcelWorker {
+	f, err := excelize.OpenFile("Skid Loader QA Replacements.xlsx")
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Fatal("Unable to find read file")
 	}
-	defer func() {
-		// Close the spreadsheet.
-		if err := f.Close(); err != nil {
-			fmt.Println(err)
-		}
-	}()
+	return ExcelWorker{file: f}
 }
