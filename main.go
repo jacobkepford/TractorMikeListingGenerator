@@ -42,10 +42,14 @@ func (e *ExcelWorker) WriteColumnHeaders() {
 func (e *ExcelWorker) WriteVariableCells(skuLength int) {
 	rowValue := DataStartingRow
 	for i := 0; i < skuLength-1; i++ {
-		cell := fmt.Sprintf("B%d", rowValue)
-		e.WriteCell(cell, "variable")
+		e.writeVariable(rowValue)
 		rowValue += 3
 	}
+}
+
+func (e *ExcelWorker) writeVariable(rowValue int) {
+	cell := fmt.Sprintf("B%d", rowValue)
+	e.WriteCell(cell, "variable")
 }
 
 func (e *ExcelWorker) WriteVariationCells(skuData []string) {
