@@ -32,7 +32,12 @@ func TestWritingVariableTypeCells(t *testing.T) {
 	excelFile := CreateExcelFile()
 	defer excelFile.CloseFile()
 
-	excelFile.WriteVariableCells(3)
+	readFile := CreateReadFile()
+	defer readFile.CloseFile()
+
+	readFile.GetDataByColumn()
+
+	excelFile.WriteVariableCells(readFile.dataByColumn)
 
 	cellValue := excelFile.ReadCell("B5")
 
@@ -70,5 +75,24 @@ func TestWritingVariationSkuCells(t *testing.T) {
 
 	if actualSku1 != wantSku1 || actualSku2 != wantSku2 {
 		t.Errorf("Sku values are not valid Sku 1 should be %q but is %q, Sku 2 should be %q but is %q", wantSku1, actualSku1, wantSku2, actualSku2)
+	}
+}
+
+func TestWritingVariableNameCells(t *testing.T) {
+	excelFile := CreateExcelFile()
+	defer excelFile.CloseFile()
+
+	readFile := CreateReadFile()
+	defer readFile.CloseFile()
+
+	readFile.GetDataByColumn()
+
+	excelFile.WriteVariableCells(readFile.dataByColumn)
+
+	actualName := excelFile.ReadCell("D5")
+	wantName := "ASV RC50 (Serial Number Below RSC02286) Skid Steer Quick Attach Replacement Faceplate"
+
+	if actualName != wantName {
+		t.Errorf("Expected name to be %q, instead got %q", wantName, actualName)
 	}
 }

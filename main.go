@@ -39,10 +39,12 @@ func (e *ExcelWorker) WriteColumnHeaders() {
 	e.file.SetSheetRow(WorkingSheet, "A1", &e.columnHeaders)
 }
 
-func (e *ExcelWorker) WriteVariableCells(skuLength int) {
+func (e *ExcelWorker) WriteVariableCells(readFileData [][]string) {
+	columnLength := len(readFileData[0])
 	rowValue := DataStartingRow
-	for i := 0; i < skuLength-1; i++ {
+	for i := 0; i < columnLength-1; i++ {
 		e.writeVariable(rowValue)
+		e.writeVariableName(rowValue, readFileData[0][i+1], readFileData[1][i+1])
 		rowValue += 3
 	}
 }
@@ -50,6 +52,12 @@ func (e *ExcelWorker) WriteVariableCells(skuLength int) {
 func (e *ExcelWorker) writeVariable(rowValue int) {
 	cell := fmt.Sprintf("B%d", rowValue)
 	e.WriteCell(cell, "variable")
+}
+
+func (e *ExcelWorker) writeVariableName(rowValue int, brandData, modelData string) {
+	cell := fmt.Sprintf("D%d", rowValue)
+	writeData := fmt.Sprintf("%s %s Skid Steer Quick Attach Replacement Faceplate", brandData, modelData)
+	e.WriteCell(cell, writeData)
 }
 
 func (e *ExcelWorker) WriteVariationCells(skuData []string) {
@@ -134,7 +142,7 @@ func main() {
 	readFile.GetDataByColumn()
 
 	skuData := readFile.dataByColumn[3]
-	excelFile.WriteVariableCells(len(skuData))
+	excelFile.WriteVariableCells(readFile.dataByColumn)
 	excelFile.WriteVariationCells(skuData)
 
 	excelFile.file.SaveAs("Book1.xlsx")
