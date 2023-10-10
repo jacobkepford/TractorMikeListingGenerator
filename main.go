@@ -41,7 +41,7 @@ func (e *ExcelWorker) WriteColumnHeaders() {
 
 func (e *ExcelWorker) WriteVariableCells(skuLength int) {
 	rowValue := DataStartingRow
-	for i := 0; i < skuLength; i++ {
+	for i := 0; i < skuLength-1; i++ {
 		cell := fmt.Sprintf("B%d", rowValue)
 		e.WriteCell(cell, "variable")
 		rowValue += 3
