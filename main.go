@@ -106,3 +106,22 @@ func CreateReadFile() ExcelWorker {
 	}
 	return ExcelWorker{file: f}
 }
+
+func main() {
+	excelFile := CreateExcelFile()
+	defer excelFile.CloseFile()
+
+	readFile := CreateReadFile()
+	defer readFile.CloseFile()
+
+	excelFile.columnHeaders = GetColumnHeaders()
+	excelFile.WriteColumnHeaders()
+
+	readFile.GetDataByColumn()
+
+	skuData := readFile.dataByColumn[3]
+	excelFile.WriteVariableCells(len(skuData))
+	excelFile.WriteVariationCells(skuData)
+
+	excelFile.file.SaveAs("Book1.xlsx")
+}
