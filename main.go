@@ -60,10 +60,12 @@ func (e *ExcelWorker) writeVariableName(rowValue int, brandData, modelData strin
 	e.WriteCell(cell, writeData)
 }
 
-func (e *ExcelWorker) WriteVariationCells(skuData []string) {
+func (e *ExcelWorker) WriteVariationCells(readFileData [][]string) {
+	columnLength := len(readFileData[0])
+	skuData := readFileData[3]
 	rowValue := DataStartingRow + 1
 
-	for i := 0; i < len(skuData)-1; i++ {
+	for i := 0; i < columnLength-1; i++ {
 		e.writeVariation(rowValue)
 		e.writeSku(rowValue, 1, skuData[i+1])
 		rowValue++
@@ -141,9 +143,8 @@ func main() {
 
 	readFile.GetDataByColumn()
 
-	skuData := readFile.dataByColumn[3]
 	excelFile.WriteVariableCells(readFile.dataByColumn)
-	excelFile.WriteVariationCells(skuData)
+	excelFile.WriteVariationCells(readFile.dataByColumn)
 
 	excelFile.file.SaveAs("Book1.xlsx")
 }

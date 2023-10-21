@@ -54,7 +54,12 @@ func TestWritingVariationTypeCells(t *testing.T) {
 	excelFile := CreateWriteFile()
 	defer excelFile.CloseFile()
 
-	excelFile.WriteVariationCells([]string{"Sku", "One", "Two"})
+	readFile := CreateTestReadFile(t)
+	defer readFile.CloseFile()
+
+	readFile.GetDataByColumn()
+
+	excelFile.WriteVariationCells(readFile.dataByColumn)
 
 	variation1 := excelFile.ReadCell("B6")
 	variation2 := excelFile.ReadCell("B7")
@@ -68,13 +73,18 @@ func TestWritingVariationSkuCells(t *testing.T) {
 	excelFile := CreateWriteFile()
 	defer excelFile.CloseFile()
 
-	excelFile.WriteVariationCells([]string{"Sku", "One", "Two"})
+	readFile := CreateTestReadFile(t)
+	defer readFile.CloseFile()
+
+	readFile.GetDataByColumn()
+
+	excelFile.WriteVariationCells(readFile.dataByColumn)
 
 	actualSku1 := excelFile.ReadCell("C6")
 	actualSku2 := excelFile.ReadCell("C7")
 
-	wantSku1 := "Two-BOQF10HYD"
-	wantSku2 := "Two-BOQF10"
+	wantSku1 := "Test2-3-BOQF10HYD"
+	wantSku2 := "Test2-3-BOQF10"
 
 	if actualSku1 != wantSku1 || actualSku2 != wantSku2 {
 		t.Errorf("Sku values are not valid Sku 1 should be %q but is %q, Sku 2 should be %q but is %q", wantSku1, actualSku1, wantSku2, actualSku2)
