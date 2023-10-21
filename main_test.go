@@ -85,7 +85,7 @@ func TestWritingVariableNameCells(t *testing.T) {
 	excelFile := CreateWriteFile()
 	defer excelFile.CloseFile()
 
-	readFile := CreateReadFile()
+	readFile := CreateTestReadFile(t)
 	defer readFile.CloseFile()
 
 	readFile.GetDataByColumn()
@@ -93,7 +93,7 @@ func TestWritingVariableNameCells(t *testing.T) {
 	excelFile.WriteVariableCells(readFile.dataByColumn)
 
 	actualName := excelFile.ReadCell("D5")
-	wantName := "ASV RC50 (Serial Number Below RSC02286) Skid Steer Quick Attach Replacement Faceplate"
+	wantName := "Test2-0 Test2-1 Skid Steer Quick Attach Replacement Faceplate"
 
 	if actualName != wantName {
 		t.Errorf("Expected name to be %q, instead got %q", wantName, actualName)
