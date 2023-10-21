@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"testing"
+
+	"github.com/xuri/excelize/v2"
 )
 
 func TestGetColumnHeaders(t *testing.T) {
@@ -13,7 +16,7 @@ func TestGetColumnHeaders(t *testing.T) {
 }
 
 func TestWritingColumnHeaders(t *testing.T) {
-	excelFile := CreateExcelFile()
+	excelFile := CreateWriteFile()
 	defer excelFile.CloseFile()
 
 	excelFile.columnHeaders = GetColumnHeaders()
@@ -29,10 +32,10 @@ func TestWritingColumnHeaders(t *testing.T) {
 }
 
 func TestWritingVariableTypeCells(t *testing.T) {
-	excelFile := CreateExcelFile()
+	excelFile := CreateWriteFile()
 	defer excelFile.CloseFile()
 
-	readFile := CreateReadFile()
+	readFile := CreateTestReadFile(t)
 	defer readFile.CloseFile()
 
 	readFile.GetDataByColumn()
@@ -48,7 +51,7 @@ func TestWritingVariableTypeCells(t *testing.T) {
 }
 
 func TestWritingVariationTypeCells(t *testing.T) {
-	excelFile := CreateExcelFile()
+	excelFile := CreateWriteFile()
 	defer excelFile.CloseFile()
 
 	excelFile.WriteVariationCells([]string{"Sku", "One", "Two"})
@@ -62,7 +65,7 @@ func TestWritingVariationTypeCells(t *testing.T) {
 }
 
 func TestWritingVariationSkuCells(t *testing.T) {
-	excelFile := CreateExcelFile()
+	excelFile := CreateWriteFile()
 	defer excelFile.CloseFile()
 
 	excelFile.WriteVariationCells([]string{"Sku", "One", "Two"})
@@ -79,7 +82,7 @@ func TestWritingVariationSkuCells(t *testing.T) {
 }
 
 func TestWritingVariableNameCells(t *testing.T) {
-	excelFile := CreateExcelFile()
+	excelFile := CreateWriteFile()
 	defer excelFile.CloseFile()
 
 	readFile := CreateReadFile()
@@ -95,4 +98,29 @@ func TestWritingVariableNameCells(t *testing.T) {
 	if actualName != wantName {
 		t.Errorf("Expected name to be %q, instead got %q", wantName, actualName)
 	}
+}
+
+func CreateTestReadFile(t *testing.T) ExcelWorker {
+	t.Helper()
+
+	worker := ExcelWorker{file: excelize.NewFile()}
+	rowData := [][]string{}
+
+	for i := 0; i < 10; i++ {
+		row := make([]string, 10)
+		for j := 0; j < 10; j++ {
+			row[j] = fmt.Sprintf("Test%d-%d", i, j)
+		}
+		rowData = append(rowData, row)
+	}
+
+	for index, row := range rowData {
+		startingCell, err := excelize.CoordinatesToCellName(1, index+1)
+
+		if err != nil {
+			t.Fatal("Unable to convert to cell name")
+		}
+		worker.file.SetSheetRow(WorkingSheet, startingCell, &row)
+	}
+	return worker
 }

@@ -117,7 +117,7 @@ func GetColumnHeaders() []string {
 	return columnHeaders
 }
 
-func CreateExcelFile() ExcelWorker {
+func CreateWriteFile() ExcelWorker {
 	return ExcelWorker{file: excelize.NewFile()}
 }
 
@@ -130,7 +130,7 @@ func CreateReadFile() ExcelWorker {
 }
 
 func main() {
-	excelFile := CreateExcelFile()
+	excelFile := CreateWriteFile()
 	defer excelFile.CloseFile()
 
 	readFile := CreateReadFile()
